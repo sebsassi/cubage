@@ -19,12 +19,12 @@ struct Box
     T xmin;
     T xmax;
 
-    [[nodiscard]] constexpr inline T side_lengths() const noexcept
+    [[nodiscard]] constexpr T side_lengths() const noexcept
     {
         return xmax - xmin;
     }
 
-    [[nodiscard]] constexpr inline auto volume() const noexcept
+    [[nodiscard]] constexpr T::value_type volume() const noexcept
     {
         T lengths = side_lengths();
         return std::accumulate(
@@ -32,7 +32,7 @@ struct Box
                 std::multiplies<typename T::value_type>());
     }
 
-    [[nodiscard]] constexpr inline T center() const noexcept
+    [[nodiscard]] constexpr T center() const noexcept
     {
         return 0.5*(xmax + xmin);
     }
@@ -65,29 +65,30 @@ template <typename Rule>
 class IntegrationBox
 {
 public:
+    using RuleType = Rule;
     using DomainType = typename Rule::DomainType;
     using CodomainType = typename Rule::CodomainType;
     using Limits = Box<DomainType>;
     using Result = IntegralResult<CodomainType>;
 
-    IntegrationBox() = default;
+    constexpr IntegrationBox() = default;
 
-    IntegrationBox(const DomainType& p_xmin, const DomainType& p_xmax)
-    : limits{p_xmin, p_xmax}, subdiv_axis(), result_() {}
+    constexpr IntegrationBox(const DomainType& p_xmin, const DomainType& p_xmax)
+    : m_limits{p_xmin, p_xmax} {}
 
-    explicit IntegrationBox(const Limits& p_limits)
-    : limits(p_limits), subdiv_axis(), result_() {}
+    explicit constexpr IntegrationBox(const Limits& p_limits)
+    : m_limits(p_limits) {}
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] constexpr std::pair<IntegrationBox, IntegrationBox>
-    subdivide(FuncType f) const
+    subdivide(FuncType f) const noexcept
     {
-        const auto& [xmax_first, xmin_second] = limits.subdivide(subdiv_axis);
+        const auto& [xmax_first, xmin_second] = m_limits.subdivide(m_subdiv_axis);
 
         std::pair<IntegrationBox, IntegrationBox> boxes = {
-            IntegrationBox(limits.xmin, xmax_first),
-            IntegrationBox(xmin_second, limits.xmax)
+            IntegrationBox(m_limits.xmin, xmax_first),
+            IntegrationBox(xmin_second, m_limits.xmax)
         };
         boxes.first.integrate(f);
         boxes.second.integrate(f);
@@ -97,31 +98,30 @@ public:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    const IntegralResult<CodomainType>& integrate(FuncType f)
+    constexpr const IntegralResult<CodomainType>& integrate(FuncType f) noexcept
     {
-        const auto& [res, axis] = Rule::integrate(f, limits);
-        result_ = res;
-        subdiv_axis = axis;
+        const auto& [res, axis] = Rule::integrate(f, m_limits);
+        m_result = res;
+        m_subdiv_axis = axis;
         if constexpr (std::is_floating_point<CodomainType>::value)
-            maxerr_ = res.err;
+            m_maxerr = res.err;
         else
-            maxerr_ = *std::ranges::max_element(res.err);
-        return result_;
+            m_maxerr = *std::ranges::max_element(res.err);
+        return m_result;
     }
 
-    [[nodiscard]] constexpr inline const IntegralResult<CodomainType>&
+    [[nodiscard]] constexpr const IntegralResult<CodomainType>&
     result() const noexcept
     {
-        return result_;
+        return m_result;
     }
 
-    [[nodiscard]] constexpr inline double
-    maxerr() const noexcept
+    [[nodiscard]] constexpr double maxerr() const noexcept
     {
-        return maxerr_;
+        return m_maxerr;
     }
 
-    auto operator<=>(const IntegrationBox& b) const noexcept
+    constexpr auto operator<=>(const IntegrationBox& b) const noexcept
     {
         return maxerr() <=> b.maxerr();
     }
@@ -132,10 +132,10 @@ public:
     }
 
 private:
-    Limits limits;
-    std::size_t subdiv_axis;
-    IntegralResult<CodomainType> result_;
-    double maxerr_;
+    Limits m_limits;
+    std::size_t m_subdiv_axis;
+    IntegralResult<CodomainType> m_result;
+    double m_maxerr;
 };
 
 }

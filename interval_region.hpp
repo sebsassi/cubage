@@ -11,8 +11,7 @@
 namespace cubage
 {
 
-template <typename T>
-    requires std::floating_point<T>
+template <std::floating_point T>
 struct Interval
 {
     T xmin;
@@ -43,23 +42,24 @@ template <typename Rule>
 class IntegrationInterval
 {
 public:
+    using RuleType = Rule;
     using DomainType = typename Rule::DomainType;
     using CodomainType = typename Rule::CodomainType;
     using Limits = Interval<DomainType>;
     using Result = IntegralResult<CodomainType>;
 
-    IntegrationInterval() = default;
+    constexpr IntegrationInterval() = default;
 
-    IntegrationInterval(const DomainType& p_xmin, const DomainType& p_xmax)
-    : limits{p_xmin, p_xmax}, result_(), maxerr_() {}
+    constexpr IntegrationInterval(const DomainType& p_xmin, const DomainType& p_xmax)
+    : limits{p_xmin, p_xmax}, m_result(), m_maxerr() {}
 
-    explicit IntegrationInterval(const Limits& p_limits)
-    : limits(p_limits), result_(), maxerr_() {}
+    explicit constexpr IntegrationInterval(const Limits& p_limits)
+    : limits(p_limits), m_result(), m_maxerr() {}
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] constexpr std::pair<IntegrationInterval, IntegrationInterval>
-    subdivide(FuncType f) const
+    subdivide(FuncType f) const noexcept
     {
         const DomainType mid = limits.center();
 
@@ -75,29 +75,28 @@ public:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    const IntegralResult<CodomainType>& integrate(FuncType f)
+    constexpr const IntegralResult<CodomainType>& integrate(FuncType f) noexcept
     {
-        result_ = Rule::integrate(f, limits);
+        m_result = Rule::integrate(f, limits);
         if constexpr (std::is_floating_point<CodomainType>::value)
-            maxerr_ = result_.err;
+            m_maxerr = m_result.err;
         else
-            maxerr_ = *std::ranges::max_element(result_.err);
-        return result_;
+            m_maxerr = *std::ranges::max_element(m_result.err);
+        return m_result;
     }
 
-    [[nodiscard]] constexpr inline const IntegralResult<CodomainType>&
+    [[nodiscard]] constexpr const IntegralResult<CodomainType>&
     result() const noexcept
     {
-        return result_;
+        return m_result;
     }
 
-    [[nodiscard]] constexpr inline double
-    maxerr() const noexcept
+    [[nodiscard]] constexpr double maxerr() const noexcept
     {
-        return maxerr_;
+        return m_maxerr;
     }
 
-    auto operator<=>(const IntegrationInterval& b) const noexcept
+    constexpr auto operator<=>(const IntegrationInterval& b) const noexcept
     {
         return maxerr() <=> b.maxerr();
     }
@@ -109,8 +108,8 @@ public:
 
 private:
     Limits limits;
-    IntegralResult<CodomainType> result_;
-    double maxerr_;
+    IntegralResult<CodomainType> m_result;
+    double m_maxerr;
 };
 
 }

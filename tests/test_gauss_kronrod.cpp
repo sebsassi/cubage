@@ -1,4 +1,4 @@
-#include "gauss_kronrod.hpp"
+#include "../gauss_kronrod.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -29,7 +29,7 @@ gauss_kronrod_15_integrates_22nd_degree_polynomial_exactly()
         return x22 + x21 + x14 + x11 + x7 + x4 + x3 + x;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 39891.0/30360.0, 1.0e-13);
 }
 
@@ -54,7 +54,7 @@ gauss_kronrod_21_integrates_31st_degree_polynomial_exactly()
         return x31 + x30 + x28 + x24 + x10 + x5 + x4 + x2 + x;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 11304313.0/7911200.0, 1.0e-13);
 }
 
@@ -83,7 +83,7 @@ gauss_kronrod_31_integrates_46th_degree_polynomial_exactly()
         return x46 + x41 + x35 + x21 + x10 + x8 + x7 + x6 + x2;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 34303.0/37224.0, 1.0e-13);
 }
 
@@ -116,7 +116,7 @@ gauss_kronrod_41_integrates_61st_degree_polynomial_exactly()
         return x61 + x56 + x49 + x40 + x32 + x27 + x24 + x9 + x3;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 297932454.0/557841900.0, 1.0e-13);
 }
 
@@ -149,7 +149,7 @@ gauss_kronrod_51_integrates_76th_degree_polynomial_exactly()
         return x76 + x72 + x48 + x40 + x25 + x20 + x11 + x4 + x3;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 869368702.0/1258317060.0, 1.0e-13);
 }
 
@@ -177,7 +177,7 @@ gauss_kronrod_61_integrates_91st_degree_polynomial_exactly()
         return x91 + x88 + x64 + x35 + x32 + x19 + x11 + x4 + x3;
     };
 
-    const auto& [res, axis] = Rule::integrate(polynomial, limits);
+    const auto res = Rule::integrate(polynomial, limits);
     return close(res.val, 35771317.0/52689780.0, 1.0e-13);
 }
 

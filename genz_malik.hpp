@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-#include "array_arithmetic.hpp"
 #include "box_region.hpp"
 
 namespace cubage
@@ -117,8 +116,8 @@ struct GenzMalikD7
         if constexpr (std::is_floating_point<CodomainType>::value)
             err = std::fabs(err);
         else
-        std::ranges::transform(
-                err, err, static_cast<double(*)(double)>(std::fabs));
+            std::ranges::transform(
+                    err, err, static_cast<double(*)(double)>(std::fabs));
 
         const std::array<double, ndim> fourth_diff_normed
                 = normed_fourth_difference(second_diff_2, second_diff_3);
@@ -129,13 +128,19 @@ struct GenzMalikD7
         };
     }
 
+    [[nodiscard]] static constexpr std::size_t points_count()
+    {
+        constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
+        return (1 << ndim) + 1 + 2*ndim*(1 + ndim);
+    }
+
 private:
     using DiffType
             = std::array<CodomainType, std::tuple_size<DomainType>::value>;
     using NormedDiffType
             = std::array<double, std::tuple_size<DomainType>::value>;
 
-    [[nodiscard]] static constexpr inline std::size_t
+    [[nodiscard]] static constexpr std::size_t
     subdiv_axis(const NormedDiffType& fourth_diff_normed)
     {
         return std::size_t(std::distance(
@@ -143,12 +148,12 @@ private:
                 std::ranges::max_element(fourth_diff_normed)));
     }
 
-    [[nodiscard]] static constexpr inline NormedDiffType 
+    [[nodiscard]] static constexpr NormedDiffType 
     normed_fourth_difference(
         const DiffType& second_diff_2, const DiffType& second_diff_3)
     {
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
-        constexpr double ratio = (9.0/10.0 - 6.0/7.0)/(9.0/10.0 - 3.0/5.0);
+        constexpr double ratio = (1.0/7.0);
         
         NormedDiffType fourth_diff_normed;
         for (size_t i = 0; i < ndim; ++i)
@@ -160,7 +165,7 @@ private:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] static constexpr inline std::pair<CodomainType, DiffType> 
+    [[nodiscard]] static constexpr std::pair<CodomainType, DiffType> 
     symmetric_sum_1_var(
         FuncType f, const DomainType& center, const DomainType& half_lengths, const CodomainType& central_value, double gm_point)
     {
@@ -192,7 +197,7 @@ private:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] static constexpr inline CodomainType
+    [[nodiscard]] static constexpr CodomainType
     symmetric_sum_2_var(
         FuncType f, const DomainType& center, const DomainType& half_lengths)
     {
@@ -241,7 +246,7 @@ private:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] static constexpr inline CodomainType
+    [[nodiscard]] static constexpr CodomainType
     symmetric_sum_n_var(
         FuncType f, const DomainType& center, const DomainType& half_lengths)
     {
@@ -266,7 +271,7 @@ private:
         return val;
     }
 
-    [[nodiscard]] static constexpr inline unsigned int
+    [[nodiscard]] static constexpr unsigned int
     ctz(unsigned int n)
     {
     #if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))

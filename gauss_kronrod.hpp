@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <ranges>
+#include <algorithm>
 
 #include "integral_result.hpp"
 #include "gauss_kronrod_data.hpp"
@@ -72,14 +73,14 @@ struct GaussKronrod
         }
 
         std::array<std::pair<CodomainType, CodomainType>, kronrod_points.size()> kronrod_values{};
-        for (size_t i = 0; i < gauss_points.size(); ++i)
+        for (size_t i = 0; i < kronrod_points.size(); ++i)
         {
             const DomainType disp = half_length*kronrod_points[i];
             kronrod_values[i].first = f(center + disp);
             kronrod_values[i].second = f(center - disp);
         }
 
-        CodomainType val{} = central_value*center_weight;
+        CodomainType val = central_value*center_weight;
         CodomainType val_gauss{};
 
         for (size_t i = 0; i < gauss_points.size(); ++i)
@@ -102,7 +103,7 @@ struct GaussKronrod
         const CodomainType err_null_1 = vfabs(val - val_gauss);
         
         const CodomainType favg = 0.5*val;
-        const CodomainType err_null_0 = vfabs(central_value - favg)*center_weight;
+        CodomainType err_null_0 = vfabs(central_value - favg)*center_weight;
         for (size_t i = 0; i < gauss_points.size(); ++i)
         {
             const auto& [first, second] = gauss_values[i];
@@ -114,30 +115,43 @@ struct GaussKronrod
             err_null_0 += (vfabs(first - favg) + vfabs(second - favg))*kronrod_weights_k[i];
         }
 
-        CodomainType err = error_null_0;
+        CodomainType err = err_null_0;
         if constexpr (std::is_floating_point<CodomainType>::value)
             err *= half_length*berntsen_espelid_estimate(
-                    error_null_1, error_null_0);
+                    err_null_1, err_null_0);
         else
         {
             for (std::size_t i = 0; i < std::tuple_size<CodomainType>::value; ++i)
                 err[i] *= half_length*berntsen_espelid_estimate(
-                        error_null_1[i], error_null_0[i]);
+                        err_null_1[i], err_null_0[i]);
         }
 
         return IntegralResult<CodomainType>{half_length*val, err};
     }
 
+    [[nodiscard]] static constexpr std::size_t num_points()
+    {
+        return Degree;
+    }
+
 private:
-    [[nodiscard]] static constexpr inline CodomainType
+    [[nodiscard]] static constexpr CodomainType
     vfabs(const CodomainType& x)
     {
         if constexpr (std::is_floating_point<CodomainType>::value)
             return std::fabs(x);
         else
+#if (__GNUC__ > 13)
             return x
                 | std::views::transform(std::fabs)
                 | std::ranges::to<CodomainType>();
+#else
+        {
+            CodomainType res{};
+            std::views::transform(x, res, std::fabs);
+            return res;
+        }
+#endif
     }
 
     /*
@@ -145,7 +159,7 @@ private:
 
             Jarle Berntsen, Terje O. Espelid, "Error Estimation in Automatic Quadrature Routines", ACM Trans. Math. Softw. 17:233-252, 1991
     */
-    [[nodiscard]] static constexpr inline double berntsen_espelid_estimate(
+    [[nodiscard]] static constexpr double berntsen_espelid_estimate(
         double err_null_1, double err_null_0)
     {
         const double ratio = err_null_1/err_null_0;

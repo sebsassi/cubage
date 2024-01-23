@@ -48,14 +48,14 @@ struct IntegralResult
             return std::tuple_size<T>::value;
     }
 
-    constexpr IntegralResult& operator+=(const IntegralResult& x)
+    constexpr IntegralResult& operator+=(const IntegralResult& x) noexcept
     {
         val += x.val;
         err += x.err;
         return *this;
     }
 
-    constexpr IntegralResult& operator-=(const IntegralResult& x)
+    constexpr IntegralResult& operator-=(const IntegralResult& x) noexcept
     {
         val -= x.val;
         err -= x.err;
@@ -63,19 +63,15 @@ struct IntegralResult
     }
 
     [[nodiscard]] constexpr IntegralResult
-    operator+(const IntegralResult& x) const
+    operator+(const IntegralResult& x) const noexcept
     {
-        IntegralResult res = *this;
-        res += x;
-        return res;
+        return IntegralResult{this->val + x.val, this->err + x.err};
     }
 
     [[nodiscard]] constexpr IntegralResult
-    operator-(const IntegralResult& x) const
+    operator-(const IntegralResult& x) const noexcept
     {
-        IntegralResult res = *this;
-        res -= x;
-        return res;
+        return IntegralResult{this->val - x.val, this->err - x.err};
     }
 };
 

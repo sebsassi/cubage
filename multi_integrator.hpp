@@ -10,7 +10,6 @@
 
 #include <iostream>
 
-#include "array_arithmetic.hpp"
 #include "integral_result.hpp"
 #include "concepts.hpp"
 
@@ -56,8 +55,10 @@ template <SubdivisionIntegrable RegionType, typename NormType = NormIndividual>
 class MultiIntegrator
 {
 public:
-    using CodomainType = typename RegionType::CodomainType;
-    using DomainType = typename RegionType::DomainType;
+    using Region = RegionType;
+    using Limits = typename Region::Limits;
+    using CodomainType = typename Region::CodomainType;
+    using DomainType = typename Region::DomainType;
     using Result = IntegralResult<CodomainType>;
 
     MultiIntegrator() = default;
@@ -69,19 +70,35 @@ public:
             const std::vector<typename RegionType::Limits>& integration_domain,
             double abserr, double relerr)
     {
-        generate(region_heap, integration_domain);
+        m_region_eval_count = integration_domain.size();
+        generate(integration_domain);
         Result res = initialize(f);
 
         while (!has_converged(res, abserr, relerr))
-        {
             subdivide_top_region(f, res);
-        }
         
         // resum to minimize spooky floating point error accumulation
         res = Result{};
-        for (const auto& region : region_heap)
+        for (const auto& region : m_region_heap)
             res += region.result();
         return res;
+    }
+
+    [[nodiscard]] std::size_t func_eval_count() const noexcept
+    {
+        return m_region_eval_count*Region::RuleType::points_count();
+    }
+    [[nodiscard]] std::size_t region_eval_count() const noexcept
+    {
+        return m_region_eval_count;
+    }
+    [[nodiscard]] std::size_t region_count() const noexcept
+    {
+        return m_region_heap.size();
+    }
+    [[nodiscard]] std::size_t capacity() const noexcept
+    {
+        return m_region_heap.capacity();
     }
 
 private:
@@ -90,9 +107,9 @@ private:
     [[nodiscard]] inline Result initialize(FuncType f)
     {
         Result res{};
-        for (auto& region : region_heap)
+        for (auto& region : m_region_heap)
             res += region.integrate(f);
-        std::ranges::make_heap(region_heap);
+        std::ranges::make_heap(m_region_heap);
 
         return res;
     }
@@ -101,6 +118,7 @@ private:
         requires MapsAs<FuncType, DomainType, CodomainType>
     inline void subdivide_top_region(FuncType f, Result& res)
     {
+        m_region_eval_count += 2;
         const RegionType top_region = pop_top_region();
 
         const std::pair<RegionType, RegionType> new_regions
@@ -114,7 +132,7 @@ private:
     }
 
     [[nodiscard]] inline bool has_converged(
-        const Result& res, double abserr, double relerr) const
+        const Result& res, double abserr, double relerr) const noexcept
     {
         if constexpr (std::floating_point<CodomainType>)
             return res.err <= abserr || res.err <= res.val*relerr;
@@ -148,35 +166,29 @@ private:
 
     inline void push_to_heap(const RegionType& region)
     {
-        region_heap.push_back(region);
-        std::ranges::push_heap(region_heap);
+        m_region_heap.push_back(region);
+        std::ranges::push_heap(m_region_heap);
     }
 
     [[nodiscard]] inline RegionType pop_top_region()
     {
-        std::ranges::pop_heap(region_heap);
-        RegionType top_region = region_heap.back();
-        region_heap.pop_back();
+        std::ranges::pop_heap(m_region_heap);
+        RegionType top_region = m_region_heap.back();
+        m_region_heap.pop_back();
         return top_region;
     }
 
-private:
-    std::vector<RegionType> region_heap;
-};
+    void generate(const std::vector<Limits>& limits)
+    {
+        m_region_heap.clear();
+        m_region_heap.reserve(10000);
+        for (const auto& limit : limits)
+            m_region_heap.emplace_back(limit);
+    }
 
-template <SubdivisionIntegrable RegionType, typename LimitType>
-    requires std::is_same_v<typename RegionType::Limits, LimitType>
-static void generate(
-    std::vector<RegionType>& regions, const std::vector<LimitType>& limits)
-{
-    regions.resize(limits.size());
-#if (__GNUC__ > 12)
-    for (auto& [region, limit] : std::ranges::views::zip(regions, limits))
-        region = RegionType(limit);
-#else
-    for (std::size_t i = 0; i < limits.size(); ++i)
-        regions[i] = RegionType(limits[i]);
-#endif
-}
+private:
+    std::vector<RegionType> m_region_heap;
+    std::size_t m_region_eval_count;
+};
 
 }

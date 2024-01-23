@@ -1,7 +1,5 @@
 #pragma once
 
-#include "array_arithmetic.hpp"
-
 namespace cubage
 {
 
@@ -23,14 +21,19 @@ template <std::floating_point T, std::size_t N>
 constexpr std::array<T, N> project_along_unitv(
     const std::array<T, N>& a, const std::array<T, N>& uvec)
 {
-    return dot(a, uvec)*uvec;
+    const T proj = dot(a, uvec);
+    std::array<T, N> res = uvec;
+    for (auto& element : res)
+        element *= proj;
+    return res;
 }
 
 template <std::floating_point T, std::size_t N>
 constexpr std::array<T, N>& normalize(std::array<T, N>& a)
 {
     T inv_length = 1.0/length(a);
-    a *= inv_length;
+    for (auto& element : a)
+        element *= inv_length;
     return a;
 }
 

@@ -1,4 +1,4 @@
-#include "genz_malik.hpp"
+#include "../genz_malik.hpp"
 
 #include <iostream>
 

@@ -13,7 +13,7 @@ concept ArithmeticAssignable = requires(T a, T b)
 
 template <ArithmeticAssignable T, std::size_t N>
 constexpr std::array<T, N>& operator+=(
-    std::array<T, N>& a, const std::array<T, N>& b)
+    std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     for (std::size_t i = 0; i < N; ++i)
         a[i] += b[i];
@@ -22,7 +22,7 @@ constexpr std::array<T, N>& operator+=(
 
 template <ArithmeticAssignable T, std::size_t N>
 [[nodiscard]] constexpr std::array<T, N> operator+(
-    const std::array<T, N>& a, const std::array<T, N>& b)
+    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     std::array<T, N> res = a;
     res += b;
@@ -31,7 +31,7 @@ template <ArithmeticAssignable T, std::size_t N>
 
 template <ArithmeticAssignable T, std::size_t N>
 constexpr std::array<T, N>& operator-=(
-    std::array<T, N>& a, const std::array<T, N>& b)
+    std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     for (std::size_t i = 0; i < N; ++i)
         a[i] -= b[i];
@@ -40,7 +40,7 @@ constexpr std::array<T, N>& operator-=(
 
 template <ArithmeticAssignable T, std::size_t N>
 [[nodiscard]] constexpr std::array<T, N> operator-(
-    const std::array<T, N>& a, const std::array<T, N>& b)
+    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     std::array<T, N> res = a;
     res -= b;
@@ -48,7 +48,7 @@ template <ArithmeticAssignable T, std::size_t N>
 }
 
 template <ArithmeticAssignable T, std::size_t N>
-constexpr std::array<T, N>& operator*=(std::array<T, N>& a, const T& b)
+constexpr std::array<T, N>& operator*=(std::array<T, N>& a, const T& b) noexcept
 {
     for (std::size_t i = 0; i < N; ++i)
         a[i] *= b;
@@ -57,7 +57,7 @@ constexpr std::array<T, N>& operator*=(std::array<T, N>& a, const T& b)
 
 template <ArithmeticAssignable T, std::size_t N>
 [[nodiscard]] constexpr std::array<T, N> operator*(
-    const std::array<T, N>& a, const T& b)
+    const std::array<T, N>& a, const T& b) noexcept
 {
     std::array<T, N> res = a;
     res *= b;
@@ -66,7 +66,7 @@ template <ArithmeticAssignable T, std::size_t N>
 
 template <ArithmeticAssignable T, std::size_t N>
 [[nodiscard]] constexpr std::array<T, N> operator*(
-    const T& b, const std::array<T, N>& a)
+    const T& b, const std::array<T, N>& a) noexcept
 {
     std::array<T, N> res = a;
     res *= b;
@@ -75,7 +75,7 @@ template <ArithmeticAssignable T, std::size_t N>
 
 template <ArithmeticAssignable T, std::size_t N>
 constexpr std::array<T, N>& operator*=(
-    std::array<T, N>& a, const std::array<T, N>& b)
+    std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     for (std::size_t i = 0; i < N; ++i)
         a[i] *= b[i];
@@ -84,7 +84,7 @@ constexpr std::array<T, N>& operator*=(
 
 template <ArithmeticAssignable T, std::size_t N>
 [[nodiscard]] constexpr std::array<T, N> operator*(
-    const std::array<T, N>& a, const std::array<T, N>& b)
+    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
 {
     std::array<T, N> res = a;
     res *= b;
