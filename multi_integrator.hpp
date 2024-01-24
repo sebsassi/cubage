@@ -66,12 +66,15 @@ public:
 
     template <typename FuncType, typename LimitsType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-        &&  (std::same_as<LimitsType, Limits> || std::convertible_to<LimitsType, std::span<Limits>>)
+        &&  (std::same_as<LimitsType, Limits> || std::convertible_to<LimitsType, std::span<const Limits>>)
     [[nodiscard]] Result integrate(
             FuncType f, LimitsType& integration_domain,
             double abserr, double relerr)
     {
-        m_region_eval_count = integration_domain.size();
+        if constexpr (std::same_as<LimitsType, Limits>)
+            m_region_eval_count = 1;
+        else
+            m_region_eval_count = integration_domain.size();
         generate(integration_domain);
         Result res = initialize(f);
 
@@ -179,7 +182,7 @@ private:
         return top_region;
     }
 
-    void generate(const std::span<Limits>& limits)
+    void generate(std::span<const Limits> limits)
     {
         m_region_heap.clear();
         m_region_heap.reserve(limits.size());
@@ -191,7 +194,7 @@ private:
     {
         m_region_heap.clear();
         m_region_heap.reserve(1);
-        m_region_heap.emplace_back(limit);
+        m_region_heap.emplace_back(limits);
     }
 
 private:

@@ -22,13 +22,15 @@ int main()
         return std::exp(-0.5*z2);
     };
 
-    using Integrator = cubage::IntervalIntegrator<double, double>;
+    using DomainType = double;
+    using CodomainType = double;
+    using Integrator = cubage::IntervalIntegrator<DomainType, CodomainType>;
     using Limits = typename Integrator::Limits;
     using Result = typename Integrator::Result;
 
     double a = -1.0;
     double b = +1.0;
-    const std::vector<Limits> limits = { Limits{a, b} };
+    const Limits limits = {a, b};
 
     Integrator integrator{};
 
@@ -40,10 +42,12 @@ int main()
     std::cout << "Error: " << res.err << '\n';
 }
 ```
+Here `function` doesn't need to be a lamda, and can be any object that has a `CodomainType operator()(DomainType x)` method. In the `limits` parameter, multiple intervals are also accepted, e.g., as a `std::vector<Limits>`.
 
 Example of integrating a 2D Gaussian over the box `[-1, 1]^2`:
 ```cpp
 #include "cubage/hypercube_integrator.hpp"
+#include "cubage/array_arithmetic.hpp"
 
 int main()
 {
@@ -57,13 +61,15 @@ int main()
         return std::exp(-0.5*(z2[0] + z2[1]));
     };
 
-    using Integrator = cubage::HypercubeIntegrator<std::array<double, NDIM>, double>;
+    using DomainType = std::array<double, NDIM>;
+    using CodomainType = double;
+    using Integrator = cubage::IntervalIntegrator<DomainType, CodomainType>;
     using Limits = typename Integrator::Limits;
     using Result = typename Integrator::Result;
 
     std::array<double, NDIM> a = {-1.0, -1.0, -1.0};
     std::array<double, NDIM> b = {+1.0, +1.0, +1.0};
-    const std::vector<Limits> limits = { Limits{a, b} };
+    const Limits limits = {a, b};
 
     Integrator integrator{};
 
@@ -75,4 +81,5 @@ int main()
     std::cout << "Error: " << res.err << '\n';
 }
 ```
+Since the `Integrator` expects `DomainType` to support basic vector algebra operations, the `array_arithmetic.hpp` header is provided as a convenience with implementations of the relvant operations for `std::array`.
 

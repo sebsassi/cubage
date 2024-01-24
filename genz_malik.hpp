@@ -100,8 +100,12 @@ struct GenzMalikD7
         const CodomainType gm_sum_5 = symmetric_sum_n_var(
                 f, center, half_lengths);
 
-        const std::array<double, 5> volume_weights_d7 = volume*gm_weights_d7;
-        const std::array<double, 4> volume_weights_d5 = volume*gm_weights_d5;
+        const std::array<double, 5> volume_weights_d7 = {
+            volume*gm_weights_d7[0], volume*gm_weights_d7[1], volume*gm_weights_d7[2], volume*gm_weights_d7[3], volume*gm_weights_d7[4]
+        };
+        const std::array<double, 4> volume_weights_d5 = {
+            volume*gm_weights_d5[0], volume*gm_weights_d5[1], volume*gm_weights_d5[2], volume*gm_weights_d5[3]
+        };
 
         const CodomainType val
                 = volume_weights_d7[0]*gm_sum_1 + volume_weights_d7[1]*gm_sum_2
