@@ -7,6 +7,7 @@
 #include <cmath>
 #include <type_traits>
 #include <concepts>
+#include <span>
 
 #include <iostream>
 
@@ -63,11 +64,11 @@ public:
 
     MultiIntegrator() = default;
 
-    template <typename FuncType>
+    template <typename FuncType, typename LimitsType>
         requires MapsAs<FuncType, DomainType, CodomainType>
+        &&  (std::same_as<LimitsType, Limits> || std::convertible_to<LimitsType, std::span<Limits>>)
     [[nodiscard]] Result integrate(
-            FuncType f,
-            const std::vector<typename RegionType::Limits>& integration_domain,
+            FuncType f, LimitsType& integration_domain,
             double abserr, double relerr)
     {
         m_region_eval_count = integration_domain.size();
@@ -178,12 +179,19 @@ private:
         return top_region;
     }
 
-    void generate(const std::vector<Limits>& limits)
+    void generate(const std::span<Limits>& limits)
     {
         m_region_heap.clear();
-        m_region_heap.reserve(10000);
+        m_region_heap.reserve(limits.size());
         for (const auto& limit : limits)
             m_region_heap.emplace_back(limit);
+    }
+
+    void generate(const Limits& limits)
+    {
+        m_region_heap.clear();
+        m_region_heap.reserve(1);
+        m_region_heap.emplace_back(limit);
     }
 
 private:
