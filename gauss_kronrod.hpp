@@ -47,8 +47,8 @@ struct GaussKronrod
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] static constexpr ReturnType
-    integrate(FuncType f, const Limits& limits)
+    [[nodiscard]] static constexpr
+    ReturnType integrate(FuncType f, const Limits& limits) noexcept
     {
         constexpr auto gauss_points = RuleData::gauss_points();
         constexpr auto kronrod_points = RuleData::kronrod_points();
@@ -129,7 +129,7 @@ struct GaussKronrod
         return IntegralResult<CodomainType>{half_length*val, err};
     }
 
-    [[nodiscard]] static constexpr std::size_t num_points()
+    [[nodiscard]] static constexpr std::size_t num_points() noexcept
     {
         return Degree;
     }

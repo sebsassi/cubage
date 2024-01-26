@@ -67,8 +67,8 @@ int main()
     using Limits = typename Integrator::Limits;
     using Result = typename Integrator::Result;
 
-    std::array<double, NDIM> a = {-1.0, -1.0, -1.0};
-    std::array<double, NDIM> b = {+1.0, +1.0, +1.0};
+    std::array<double, NDIM> a = {-1.0, -1.0};
+    std::array<double, NDIM> b = {+1.0, +1.0};
     const Limits limits = {a, b};
 
     Integrator integrator{};
