@@ -50,22 +50,28 @@ public:
 
     constexpr IntegrationInterval() = default;
 
-    constexpr IntegrationInterval(const DomainType& p_xmin, const DomainType& p_xmax)
-    : limits{p_xmin, p_xmax}, m_result(), m_maxerr() {}
+    constexpr IntegrationInterval(
+        const DomainType& p_xmin, const DomainType& p_xmax):
+        IntegrationInterval(Limits{p_xmin, p_xmax}) {}
 
-    explicit constexpr IntegrationInterval(const Limits& p_limits)
-    : limits(p_limits), m_result(), m_maxerr() {}
+    explicit constexpr IntegrationInterval(const Limits& p_limits):
+        m_limits(p_limits)
+    {
+        if (m_limits.length() <= 0)
+            throw std::invalid_argument(
+                    "invalid integration limits: max <= min");
+    }
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] constexpr std::pair<IntegrationInterval, IntegrationInterval>
     subdivide(FuncType f) const noexcept
     {
-        const DomainType mid = limits.center();
+        const DomainType mid = m_limits.center();
 
         std::pair<IntegrationInterval, IntegrationInterval> intervals = {
-            IntegrationInterval(limits.xmin, mid),
-            IntegrationInterval(mid, limits.xmax)
+            IntegrationInterval(m_limits.xmin, mid),
+            IntegrationInterval(mid, m_limits.xmax)
         };
         intervals.first.integrate(f);
         intervals.second.integrate(f);
@@ -77,7 +83,7 @@ public:
         requires MapsAs<FuncType, DomainType, CodomainType>
     constexpr const IntegralResult<CodomainType>& integrate(FuncType f) noexcept
     {
-        m_result = Rule::integrate(f, limits);
+        m_result = Rule::integrate(f, m_limits);
         if constexpr (std::is_floating_point<CodomainType>::value)
             m_maxerr = m_result.err;
         else
@@ -107,7 +113,7 @@ public:
     }
 
 private:
-    Limits limits;
+    Limits m_limits;
     IntegralResult<CodomainType> m_result;
     double m_maxerr;
 };

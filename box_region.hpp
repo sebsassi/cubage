@@ -73,11 +73,19 @@ public:
 
     constexpr IntegrationBox() = default;
 
-    constexpr IntegrationBox(const DomainType& p_xmin, const DomainType& p_xmax)
-    : m_limits{p_xmin, p_xmax} {}
+    constexpr IntegrationBox(
+        const DomainType& p_xmin, const DomainType& p_xmax):
+        IntegrationBox(Limits{p_xmin, p_xmax}) {}
 
-    explicit constexpr IntegrationBox(const Limits& p_limits)
-    : m_limits(p_limits) {}
+    explicit constexpr IntegrationBox(const Limits& p_limits):
+        m_limits(p_limits)
+    {
+        const auto sides = m_limits.side_lengths();
+        for (const auto side : sides)
+            if (side <= 0)
+                throw std::invalid_argument(
+                        "invalid integration limits: max <= min");
+    }
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
