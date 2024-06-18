@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(cubage VERSION 0.1.0 LANGUAGE CXX)
+project(cubage VERSION 0.1.0 LANGUAGES CXX)
 
 add_library(cubage INTERFACE)
 
