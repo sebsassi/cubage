@@ -36,7 +36,7 @@ int main()
 
     constexpr double abserr = 1.0e-7;
     constexpr double relerr = 0.0;
-    const auto res = integrator.integrate(
+    const Result res = integrator.integrate(
             function, limits, abserr, relerr);
     std::cout << "Value: " << res.val << '\n';
     std::cout << "Error: " << res.err << '\n';
@@ -46,8 +46,8 @@ Here `function` doesn't need to be a lamda, and can be any object that has a `Co
 
 Example of integrating a 2D Gaussian over the box `[-1, 1]^2`:
 ```cpp
-#include "cubage/hypercube_integrator.hpp"
 #include "cubage/array_arithmetic.hpp"
+#include "cubage/hypercube_integrator.hpp"
 
 int main()
 {
@@ -63,7 +63,7 @@ int main()
 
     using DomainType = std::array<double, NDIM>;
     using CodomainType = double;
-    using Integrator = cubage::IntervalIntegrator<DomainType, CodomainType>;
+    using Integrator = cubage::HypercubeIntegrator<DomainType, CodomainType>;
     using Limits = typename Integrator::Limits;
     using Result = typename Integrator::Result;
 
@@ -75,7 +75,7 @@ int main()
 
     constexpr double abserr = 1.0e-7;
     constexpr double relerr = 0.0;
-    const auto res = integrator.integrate(
+    const Result res = integrator.integrate(
             function, limits, abserr, relerr);
     std::cout << "Value: " << res.val << '\n';
     std::cout << "Error: " << res.err << '\n';

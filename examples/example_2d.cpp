@@ -1,5 +1,6 @@
-#include "cubage/hypercube_integrator.hpp"
-#include "cubage/array_arithmetic.hpp"
+
+#include "array_arithmetic.hpp"
+#include "hypercube_integrator.hpp"
 
 int main()
 {

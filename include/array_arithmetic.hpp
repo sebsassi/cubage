@@ -11,82 +11,100 @@ concept ArithmeticAssignable = requires(T a, T b)
     a /= b;
 };
 
-template <ArithmeticAssignable T, std::size_t N>
-constexpr std::array<T, N>& operator+=(
-    std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+constexpr T& operator+=(
+    T& a, const T& b) noexcept
 {
-    for (std::size_t i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < std::tuple_size<T>::value; ++i)
         a[i] += b[i];
     return a;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-[[nodiscard]] constexpr std::array<T, N> operator+(
-    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+[[nodiscard]] constexpr T operator+(
+    const T& a, const T& b) noexcept
 {
-    std::array<T, N> res = a;
+    T res = a;
     res += b;
     return res;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-constexpr std::array<T, N>& operator-=(
-    std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+constexpr T& operator-=(
+    T& a, const T& b) noexcept
 {
-    for (std::size_t i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < std::tuple_size<T>::value; ++i)
         a[i] -= b[i];
     return a;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-[[nodiscard]] constexpr std::array<T, N> operator-(
-    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+[[nodiscard]] constexpr T operator-(
+    const T& a, const T& b) noexcept
 {
-    std::array<T, N> res = a;
+    T res = a;
     res -= b;
     return res;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-constexpr std::array<T, N>& operator*=(std::array<T, N>& a, const T& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+constexpr T& operator*=(T& a, const typename T::value_type& b) noexcept
 {
-    for (std::size_t i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < std::tuple_size<T>::value; ++i)
         a[i] *= b;
     return a;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-[[nodiscard]] constexpr std::array<T, N> operator*(
-    const std::array<T, N>& a, const T& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+[[nodiscard]] constexpr T operator*(
+    const T& a, const typename T::value_type& b) noexcept
 {
-    std::array<T, N> res = a;
+    T res = a;
     res *= b;
     return res;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-[[nodiscard]] constexpr std::array<T, N> operator*(
-    const T& b, const std::array<T, N>& a) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+[[nodiscard]] constexpr T operator*(
+    const typename T::value_type& b, const T& a) noexcept
 {
-    std::array<T, N> res = a;
+    T res = a;
     res *= b;
     return res;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-constexpr std::array<T, N>& operator*=(
-    std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+constexpr T& operator*=(
+    T& a, const T& b) noexcept
 {
-    for (std::size_t i = 0; i < N; ++i)
+    for (std::size_t i = 0; i < std::tuple_size<T>::value; ++i)
         a[i] *= b[i];
     return a;
 }
 
-template <ArithmeticAssignable T, std::size_t N>
-[[nodiscard]] constexpr std::array<T, N> operator*(
-    const std::array<T, N>& a, const std::array<T, N>& b) noexcept
+template <typename T>
+    requires std::same_as<T, std::array<typename T::value_type, std::tuple_size<T>::value>> &&
+    ArithmeticAssignable<typename T::value_type>
+[[nodiscard]] constexpr T operator*(
+    const T& a, const T& b) noexcept
 {
-    std::array<T, N> res = a;
+    T res = a;
     res *= b;
     return res;
 }

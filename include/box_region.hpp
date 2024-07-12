@@ -16,6 +16,7 @@ template <typename T>
     requires ArrayLike<T> && FloatingPointVectorOperable<T>
 struct Box
 {
+    using value_type = typename T::value_type;
     T xmin;
     T xmax;
 
@@ -24,12 +25,12 @@ struct Box
         return xmax - xmin;
     }
 
-    [[nodiscard]] constexpr T::value_type volume() const noexcept
+    [[nodiscard]] constexpr value_type volume() const noexcept
     {
         T lengths = side_lengths();
         return std::accumulate(
                 lengths.begin(), lengths.end(), 1.0,
-                std::multiplies<typename T::value_type>());
+                std::multiplies<value_type>());
     }
 
     [[nodiscard]] constexpr T center() const noexcept
