@@ -66,12 +66,12 @@ public:
 
     template <typename FuncType, typename LimitsType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-        &&  (std::same_as<LimitsType, Limits> || std::convertible_to<LimitsType, std::span<const Limits>>)
+        &&  (std::same_as<std::remove_cvref_t<LimitsType>, Limits> || std::convertible_to<LimitsType, std::span<const Limits>>)
     [[nodiscard]] Result integrate(
-            FuncType f, LimitsType& integration_domain,
+            FuncType f, LimitsType&& integration_domain,
             double abserr, double relerr)
     {
-        if constexpr (std::same_as<LimitsType, Limits>)
+        if constexpr (std::same_as<std::remove_cvref_t<LimitsType>, Limits>)
             m_region_eval_count = 1;
         else
             m_region_eval_count = integration_domain.size();
