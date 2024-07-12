@@ -46,8 +46,8 @@ Here `function` doesn't need to be a lamda, and can be any object that has a `Co
 
 Example of integrating a 2D Gaussian over the box `[-1, 1]^2`:
 ```cpp
-#include "cubage/hypercube_integrator.hpp"
 #include "cubage/array_arithmetic.hpp"
+#include "cubage/hypercube_integrator.hpp"
 
 int main()
 {

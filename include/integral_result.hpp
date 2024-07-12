@@ -7,7 +7,7 @@ namespace cubage
 {
 
 template <typename T>
-concept VectorValued = requires (T a, T b)
+concept VectorValued = requires (T& a, T b)
 {
     a += b;
     a -= b;
