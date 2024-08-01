@@ -1,10 +1,8 @@
-#include "../hypercube_integrator.hpp"
-
 #include <iostream>
 #include <cassert>
 
-#include "../array_arithmetic.hpp"
-
+#include "array_arithmetic.hpp"
+#include "hypercube_integrator.hpp"
 
 constexpr bool close(double a, double b, double tol)
 {
@@ -24,7 +22,7 @@ bool gauss_kronrod_integrates_1d_gaussian()
     constexpr double abserr = 1.0e-13;
     constexpr double relerr = 0.0;
     Integrator::Region::Limits limits = Integrator::Region::Limits{-1.0, 1.0};
-    auto result = Integrator().integrate(function, limits, abserr, relerr);
+    const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';
     std::cout << result.err << '\n';
     return close(result.val, sigma*std::sqrt(2.0*M_PI), abserr);
@@ -44,7 +42,7 @@ bool genz_malik_integrates_2d_gaussian()
     constexpr double abserr = 1.0e-13;
     constexpr double relerr = 0.0;
     Integrator::Region::Limits limits = Integrator::Region::Limits{{-1.0, -1.0}, {1.0, 1.0}};
-    auto result = Integrator().integrate(function, limits, abserr, relerr);
+    const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';
     std::cout << result.err << '\n';
     return close(result.val, sigma*sigma*2.0*M_PI, abserr);
@@ -66,7 +64,7 @@ bool genz_malik_integrates_3d_gaussian()
     const std::vector<Integrator::Region::Limits> limits = {
         Integrator::Region::Limits{{-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0}}
     };
-    auto result = Integrator().integrate(function, limits, abserr, relerr);
+    const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';
     std::cout << result.err << '\n';
     return close(result.val, sigma*sigma*sigma*std::pow(2.0*M_PI, 1.5), abserr);

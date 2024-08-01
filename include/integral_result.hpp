@@ -32,6 +32,22 @@ concept ArrayLike = requires (T x, std::size_t i)
     x[i];
 };
 
+template <typename ValueType, typename StatusType>
+struct Result
+{
+    using value_type = ValueType;
+    using status_type = StatusType;
+
+    value_type value;
+    status_type status;
+};
+
+enum class Status
+{
+    SUCCESS,
+    MAX_SUBDIV
+};
+
 template <typename T>
     requires std::floating_point<T>
         || (ArrayLike<T> && FloatingPointVectorOperable<T>)

@@ -60,16 +60,17 @@ public:
     using Limits = typename Region::Limits;
     using CodomainType = typename Region::CodomainType;
     using DomainType = typename Region::DomainType;
-    using Result = IntegralResult<CodomainType>;
+    using ResultType = IntegralResult<CodomainType>;
 
     MultiIntegrator() = default;
 
     template <typename FuncType, typename LimitsType>
         requires MapsAs<FuncType, DomainType, CodomainType>
         &&  (std::same_as<std::remove_cvref_t<LimitsType>, Limits> || std::convertible_to<LimitsType, std::span<const Limits>>)
-    [[nodiscard]] Result integrate(
+    [[nodiscard]] Result<ResultType, Status> integrate(
             FuncType f, LimitsType&& integration_domain,
-            double abserr, double relerr)
+            double abserr, double relerr,
+            std::size_t max_subdiv = std::numeric_limits<std::size_t>::max())
     {
         if constexpr (std::same_as<std::remove_cvref_t<LimitsType>, Limits>)
             m_region_eval_count = 1;
@@ -78,14 +79,17 @@ public:
         generate(integration_domain);
         Result res = initialize(f);
 
-        while (!has_converged(res, abserr, relerr))
+        while (!has_converged(res, abserr, relerr) && m_region_heap.size() < max_subdiv)
             subdivide_top_region(f, res);
         
         // resum to minimize spooky floating point error accumulation
         res = Result{};
         for (const auto& region : m_region_heap)
             res += region.result();
-        return res;
+        
+        Status status = (m_region_heap.size() >= max_subdiv) ? 
+            Status::MAX_SUBDIV : Status::SUCCESS;
+        return {res, status};
     }
 
     [[nodiscard]] std::size_t func_eval_count() const noexcept
