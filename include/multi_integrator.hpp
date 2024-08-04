@@ -77,13 +77,13 @@ public:
         else
             m_region_eval_count = integration_domain.size();
         generate(integration_domain);
-        Result res = initialize(f);
+        ResultType res = initialize(f);
 
         while (!has_converged(res, abserr, relerr) && m_region_heap.size() < max_subdiv)
             subdivide_top_region(f, res);
         
         // resum to minimize spooky floating point error accumulation
-        res = Result{};
+        res = ResultType{};
         for (const auto& region : m_region_heap)
             res += region.result();
         
@@ -112,9 +112,9 @@ public:
 private:
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] inline Result initialize(FuncType f)
+    [[nodiscard]] inline ResultType initialize(FuncType f)
     {
-        Result res{};
+        ResultType res{};
         for (auto& region : m_region_heap)
             res += region.integrate(f);
         std::ranges::make_heap(m_region_heap);
@@ -124,7 +124,7 @@ private:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    inline void subdivide_top_region(FuncType f, Result& res)
+    inline void subdivide_top_region(FuncType f, ResultType& res)
     {
         m_region_eval_count += 2;
         const RegionType top_region = pop_top_region();
@@ -140,7 +140,7 @@ private:
     }
 
     [[nodiscard]] inline bool has_converged(
-        const Result& res, double abserr, double relerr) const noexcept
+        const ResultType& res, double abserr, double relerr) const noexcept
     {
         if constexpr (std::floating_point<CodomainType>)
             return res.err <= abserr || res.err <= res.val*relerr;
