@@ -21,7 +21,7 @@ bool gauss_kronrod_integrates_1d_gaussian()
 
     constexpr double abserr = 1.0e-13;
     constexpr double relerr = 0.0;
-    Integrator::Region::Limits limits = Integrator::Region::Limits{-1.0, 1.0};
+    Integrator::Limits limits = Integrator::Limits{-1.0, 1.0};
     const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';
     std::cout << result.err << '\n';
@@ -41,7 +41,7 @@ bool genz_malik_integrates_2d_gaussian()
 
     constexpr double abserr = 1.0e-13;
     constexpr double relerr = 0.0;
-    Integrator::Region::Limits limits = Integrator::Region::Limits{{-1.0, -1.0}, {1.0, 1.0}};
+    Integrator::Limits limits = Integrator::Limits{{-1.0, -1.0}, {1.0, 1.0}};
     const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';
     std::cout << result.err << '\n';
@@ -61,8 +61,8 @@ bool genz_malik_integrates_3d_gaussian()
 
     constexpr double abserr = 1.0e-13;
     constexpr double relerr = 0.0;
-    const std::vector<Integrator::Region::Limits> limits = {
-        Integrator::Region::Limits{{-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0}}
+    const std::vector<Integrator::Limits> limits = {
+        Integrator::Limits{{-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0}}
     };
     const auto& [result, _] = Integrator().integrate(function, limits, abserr, relerr);
     std::cout << result.val << '\n';

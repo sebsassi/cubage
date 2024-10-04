@@ -32,6 +32,10 @@ concept ArrayLike = requires (T x, std::size_t i)
     x[i];
 };
 
+template <typename T>
+concept RealVector = std::floating_point<T>
+        || (FloatingPointVectorOperable<T> && ArrayLike<T>);
+
 template <typename ValueType, typename StatusType>
 struct Result
 {
