@@ -1,3 +1,6 @@
+#include <cmath>
+
+#include "array_arithmetic.hpp"
 #include "box_region.hpp"
 
 constexpr bool close(double a, double b, double tol)

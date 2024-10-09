@@ -1,7 +1,7 @@
-#include "../gauss_kronrod.hpp"
-
 #include <iostream>
 #include <cmath>
+
+#include "gauss_kronrod.hpp"
 
 constexpr bool close(double a, double b, double tol)
 {

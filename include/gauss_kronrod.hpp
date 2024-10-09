@@ -44,6 +44,7 @@ struct GaussKronrod
     using ReturnType = IntegralResult<CodomainType>;
     using RuleData = GK<Degree>;
     using Limits = Interval<DomainType>;
+    using RegionType = SubdivisibleInterval<DomainType>;
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>

@@ -8,3 +8,8 @@ target_include_directories(cubage
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

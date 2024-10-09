@@ -1,8 +1,8 @@
-#include "../genz_malik.hpp"
-
-#include "../array_arithmetic.hpp"
-
 #include <iostream>
+
+#include "array_arithmetic.hpp"
+#include "genz_malik.hpp"
+
 
 constexpr bool close(double a, double b, double tol)
 {

@@ -8,8 +8,8 @@
 namespace cubage
 {
 template <std::floating_point DomainType, typename CodomainType, std::size_t Degree = 15>
-using IntervalIntegrator = MultiIntegrator<IntegrationInterval<GaussKronrod<DomainType, CodomainType, Degree>>>;
+using IntervalIntegrator = MultiIntegrator<GaussKronrod<DomainType, CodomainType, Degree>>;
 
 template <GenzMalikIntegrable DomainType, typename CodomainType>
-using HypercubeIntegrator = MultiIntegrator<IntegrationBox<GenzMalikD7<DomainType, CodomainType>>>;
+using HypercubeIntegrator = MultiIntegrator<GenzMalikD7<DomainType, CodomainType>>;
 }

@@ -19,78 +19,154 @@ namespace cubage
 
 struct NormIndividual {};
 
-template <typename T>
-concept BiSubdivisible = requires (T x, typename T::CodomainType (*f)(typename T::DomainType))
+template <typename FieldType>
+concept BiSubdivisible = requires (FieldType x, typename FieldType::CodomainType (*f)(typename FieldType::DomainType))
 {
-    { x.subdivide(f) } -> std::same_as<std::pair<T, T>>;
+    { x.subdivide(f) } -> std::same_as<std::pair<FieldType, FieldType>>;
 };
 
-template <typename T>
-concept Limited = requires { typename T::Limits; };
+template <typename FieldType>
+concept Limited = requires { typename FieldType::Limits; };
 
-template <typename T>
-concept ResultStoring = requires (T x)
+template <typename FieldType>
+concept ResultStoring = requires (FieldType x)
 {
-    { x.result() } -> std::same_as<const IntegralResult<typename T::CodomainType>&>;
+    { x.result() } -> std::same_as<const IntegralResult<typename FieldType::CodomainType>&>;
 };
 
-template <typename T>
-concept WeaklyOrdered = requires (T x, T y)
+template <typename FieldType>
+concept WeaklyOrdered = requires (FieldType x, FieldType y)
 {
     x < y;
 };
 
-template <typename T>
+template <typename FieldType>
 concept Integrating =
-requires (T x, typename T::CodomainType (*f)(typename T::DomainType))
+requires (FieldType x, typename FieldType::CodomainType (*f)(typename FieldType::DomainType))
 {
-    { x.integrate(f) } -> std::same_as<const IntegralResult<typename T::CodomainType>&>;
+    { x.integrate(f) } -> std::same_as<const IntegralResult<typename FieldType::CodomainType>&>;
 };
 
-template <typename T>
-concept SubdivisionIntegrable
-    = WeaklyOrdered<T> && Limited<T> && Integrating<T> && BiSubdivisible<T>
-    && ResultStoring<T>;
+template <typename Rule>
+class IntegrationRegion
+{
+public:
+    using RuleType = Rule;
+    using RegionType = Rule::RegionType;
+    using DomainType = typename Rule::DomainType;
+    using CodomainType = typename Rule::CodomainType;
+    using Limits = RuleType::Limits;
+    using Result = IntegralResult<CodomainType>;
 
-template <SubdivisionIntegrable RegionType, typename NormType = NormIndividual>
+    explicit constexpr IntegrationRegion(const Limits& p_limits):
+        m_region(p_limits) {}
+
+    explicit constexpr IntegrationRegion(const RegionType& p_region):
+        m_region(p_region) {}
+
+    template <typename FuncType>
+        requires MapsAs<FuncType, DomainType, CodomainType>
+    [[nodiscard]] constexpr std::pair<IntegrationRegion, IntegrationRegion>
+    subdivide(FuncType f) const noexcept
+    {
+        const auto& [left, right] = m_region.subdivide();
+
+        std::pair<IntegrationRegion, IntegrationRegion> regions = {
+            IntegrationRegion(left), IntegrationRegion(right)
+        };
+        regions.first.integrate(f);
+        regions.second.integrate(f);
+
+        return regions;
+    }
+
+    template <typename FuncType>
+        requires MapsAs<FuncType, DomainType, CodomainType>
+    constexpr const IntegralResult<CodomainType>& integrate(FuncType f) noexcept
+    {
+        m_result = m_region.template integrate<RuleType>(f);
+        if constexpr (std::is_floating_point<CodomainType>::value)
+            m_maxerr = m_result.err;
+        else
+            m_maxerr = *std::ranges::max_element(m_result.err);
+        return m_result;
+    }
+
+    [[nodiscard]] constexpr const IntegralResult<CodomainType>&
+    result() const noexcept
+    {
+        return m_result;
+    }
+
+    [[nodiscard]] constexpr double maxerr() const noexcept
+    {
+        return m_maxerr;
+    }
+
+    constexpr auto operator<=>(const IntegrationRegion& b) const noexcept
+    {
+        return maxerr() <=> b.maxerr();
+    }
+    
+    constexpr bool operator==(const IntegrationRegion& b) const noexcept
+    {
+        return maxerr() == b.maxerr();
+    }
+
+private:
+    RegionType m_region;
+    IntegralResult<CodomainType> m_result;
+    double m_maxerr;
+};
+
+template <typename FieldType>
+concept SubdivisionIntegrable
+    = WeaklyOrdered<FieldType> && Limited<FieldType> && Integrating<FieldType> && BiSubdivisible<FieldType>
+    && ResultStoring<FieldType>;
+
+template <typename RuleType, typename NormType = NormIndividual>
 class MultiIntegrator
 {
 public:
-    using Region = RegionType;
-    using Limits = typename Region::Limits;
-    using CodomainType = typename Region::CodomainType;
-    using DomainType = typename Region::DomainType;
-    using Result = IntegralResult<CodomainType>;
+    using RegionType = IntegrationRegion<RuleType>;
+    using Limits = typename RegionType::Limits;
+    using CodomainType = typename RegionType::CodomainType;
+    using DomainType = typename RegionType::DomainType;
+    using ResultType = IntegralResult<CodomainType>;
 
     MultiIntegrator() = default;
 
     template <typename FuncType, typename LimitsType>
         requires MapsAs<FuncType, DomainType, CodomainType>
         &&  (std::same_as<std::remove_cvref_t<LimitsType>, Limits> || std::convertible_to<LimitsType, std::span<const Limits>>)
-    [[nodiscard]] Result integrate(
+    [[nodiscard]] Result<ResultType, Status> integrate(
             FuncType f, LimitsType&& integration_domain,
-            double abserr, double relerr)
+            double abserr, double relerr,
+            std::size_t max_subdiv = std::numeric_limits<std::size_t>::max())
     {
         if constexpr (std::same_as<std::remove_cvref_t<LimitsType>, Limits>)
             m_region_eval_count = 1;
         else
             m_region_eval_count = integration_domain.size();
         generate(integration_domain);
-        Result res = initialize(f);
+        ResultType res = initialize(f);
 
-        while (!has_converged(res, abserr, relerr))
+        while (!has_converged(res, abserr, relerr) && m_region_heap.size() < max_subdiv)
             subdivide_top_region(f, res);
         
         // resum to minimize spooky floating point error accumulation
-        res = Result{};
+        res = ResultType{};
         for (const auto& region : m_region_heap)
             res += region.result();
-        return res;
+        
+        Status status = (m_region_heap.size() >= max_subdiv) ? 
+            Status::MAX_SUBDIV : Status::SUCCESS;
+        return {res, status};
     }
 
     [[nodiscard]] std::size_t func_eval_count() const noexcept
     {
-        return m_region_eval_count*Region::RuleType::points_count();
+        return m_region_eval_count*RuleType::points_count();
     }
     
     [[nodiscard]] std::size_t region_eval_count() const noexcept
@@ -111,9 +187,9 @@ public:
 private:
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] inline Result initialize(FuncType f)
+    [[nodiscard]] inline ResultType initialize(FuncType f)
     {
-        Result res{};
+        ResultType res{};
         for (auto& region : m_region_heap)
             res += region.integrate(f);
         std::ranges::make_heap(m_region_heap);
@@ -123,7 +199,7 @@ private:
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    inline void subdivide_top_region(FuncType f, Result& res)
+    inline void subdivide_top_region(FuncType f, ResultType& res)
     {
         m_region_eval_count += 2;
         const RegionType top_region = pop_top_region();
@@ -139,7 +215,7 @@ private:
     }
 
     [[nodiscard]] inline bool has_converged(
-        const Result& res, double abserr, double relerr) const noexcept
+        const ResultType& res, double abserr, double relerr) const noexcept
     {
         if constexpr (std::floating_point<CodomainType>)
             return res.err <= abserr || res.err <= res.val*relerr;
@@ -147,11 +223,6 @@ private:
         {
             if constexpr (std::is_same_v<NormType, NormIndividual>)
             {
-#if (__GNUC__ > 12)
-                for (const auto& [val, err] : std::ranges::views::zip(res.val, res.err))
-                    if (err > abserr && err > std::fabs(val)*relerr) return false;
-                return true;
-#else
                 for (std::size_t i = 0; i < res.ndim(); ++i)
                 {
                     if (res.err[i] > abserr
@@ -159,7 +230,6 @@ private:
                         return false;
                 }
                 return true;
-#endif
             }
             else
             {
