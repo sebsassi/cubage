@@ -58,6 +58,9 @@ public:
                     "invalid integration limits: max <= min");
     }
 
+    [[nodiscard]] constexpr const Limits&
+    limits() const noexcept { return m_limits; }
+
     [[nodiscard]] constexpr std::pair<SubdivisibleInterval, SubdivisibleInterval>
     subdivide() const noexcept
     {
