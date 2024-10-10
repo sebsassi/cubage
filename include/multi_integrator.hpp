@@ -93,15 +93,10 @@ public:
     }
 
     [[nodiscard]] constexpr const IntegralResult<CodomainType>&
-    result() const noexcept
-    {
-        return m_result;
-    }
+    result() const noexcept { return m_result; }
 
-    [[nodiscard]] constexpr double maxerr() const noexcept
-    {
-        return m_maxerr;
-    }
+    [[nodiscard]] constexpr double
+    maxerr() const noexcept { return m_maxerr; }
 
     constexpr auto operator<=>(const IntegrationRegion& b) const noexcept
     {
@@ -112,6 +107,9 @@ public:
     {
         return maxerr() == b.maxerr();
     }
+
+    [[nodiscard]] constexpr const Limits&
+    limits() const noexcept { return m_region.limits(); }
 
 private:
     RegionType m_region;
@@ -168,6 +166,7 @@ public:
     {
         return m_region_eval_count*RuleType::points_count();
     }
+
     [[nodiscard]] std::size_t region_eval_count() const noexcept
     {
         return m_region_eval_count;
@@ -176,6 +175,12 @@ public:
     {
         return m_region_heap.size();
     }
+
+    [[nodiscard]] std::span<const RegionType> regions() const noexcept
+    {
+        return std::span(m_region_heap);
+    }
+
     [[nodiscard]] std::size_t capacity() const noexcept
     {
         return m_region_heap.capacity();
