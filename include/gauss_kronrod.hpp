@@ -142,17 +142,11 @@ private:
         if constexpr (std::is_floating_point<CodomainType>::value)
             return std::fabs(x);
         else
-#if (__GNUC__ > 13)
-            return x
-                | std::views::transform(std::fabs)
-                | std::ranges::to<CodomainType>();
-#else
         {
             CodomainType res{};
             std::views::transform(x, res, std::fabs);
             return res;
         }
-#endif
     }
 
     /*
