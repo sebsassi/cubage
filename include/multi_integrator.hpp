@@ -128,7 +128,7 @@ concept SizedRangeOf = std::ranges::sized_range<T>
 
 template <typename T, typename ValueType>
 concept ValueOrSizedRangeOf
-    = std::same_as<T, ValueType> || SizedRangeOf<T, ValueType>;
+    = std::same_as<std::remove_cvref_t<T>, ValueType> || SizedRangeOf<T, ValueType>;
 
 template <typename RuleType, typename NormType = NormIndividual>
 class MultiIntegrator
