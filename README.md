@@ -1,10 +1,10 @@
 # Cubage
 
-Cubage is a header-only template library for adaptive numerical integration in multiple dimensions. Currently, integration over hyperrectangular regions is supported using the Genz-Malik quadrature for dimensions > 1, and Gauss-Kronrod quadrature for the one-dimensional case. The composable template-based implementation, however, enables extension to other region shapes, mainly simplices, and other rules, such as Monte-Carlo.
+Cubage is a header-only template library for adaptive numerical integration in multiple dimensions. Currently, integration over hyperrectangular regions is supported using the Genz-Malik quadrature for dimensions > 1, and Gauss-Kronrod quadrature for the one-dimensional case.
 
-Unlike most implementations of multidimensional integration, which have the dimensionality of the integral as a dynamic runtime parameter, in this library it is a compile-time constant parameter. The rationale for this is that the dimension of the integral rarely needs to change at runtime, and making it a compile-time parameter simplifies memory management and enables more optimization opportunities.
+This library differs from most multidimensional integration libraries in that the dimension of the integration domain is a compile-time template parameter instead of a runtime parameter. The rationale for this decision is that in any typical intergation problem, the dimension is almost always known at compile-time. Therefore providing the dimension as a compile-time parameter simplifies the memory management and enables more optimization opportunities.
 
-That is not the full extent of the template-based approach. More concretely, this library enables integration of any function `f(DomainType) -> CodomainType`, where `DomainType` and `CodomainType` are types which implement a finite-dimensional vector space (i.e., array-like types that implements addition, subtraction, and scalar multiplication).
+The template-based approach enables the integration of any function `func` with signature `CodomainType func(DomainType)`. Here `DomainType` and `CodomainType` are any types, which model finite-dimensional vectors. That is, they are floating point scalars, or array-like types with floating point elements, which implement addition, subtraction, and scalar multiplication.
 
 ## Examples
 

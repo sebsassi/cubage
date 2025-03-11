@@ -1,0 +1,27 @@
+# Compiled files
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
+
+# Build directiories
+build
+debug
+release
+
+# Editor
+.vscode
+*.vim
