@@ -29,7 +29,7 @@ namespace cubage
 {
 
 template <typename FieldType>
-[[nodiscard]] constexpr auto l1_norm(const FieldType& x)
+[[nodiscard]] constexpr auto l1_norm(const FieldType& x) noexcept
 {
     if constexpr (std::is_floating_point<FieldType>::value)
         return std::fabs(x);
@@ -85,7 +85,7 @@ struct GenzMalikD7
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] static constexpr ReturnType
-    integrate(FuncType f, const Limits& limits)
+    integrate(FuncType f, const Limits& limits) noexcept
     {
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
         constexpr double v = double(1UL << ndim);
@@ -154,7 +154,7 @@ struct GenzMalikD7
         };
     }
 
-    [[nodiscard]] static constexpr std::size_t points_count()
+    [[nodiscard]] static constexpr std::size_t points_count() noexcept
     {
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
         return (1 << ndim) + 1 + 2*ndim*(1 + ndim);
@@ -167,7 +167,7 @@ private:
             = std::array<double, std::tuple_size<DomainType>::value>;
 
     [[nodiscard]] static constexpr std::size_t
-    subdiv_axis(const NormedDiffType& fourth_diff_normed)
+    subdiv_axis(const NormedDiffType& fourth_diff_normed) noexcept
     {
         return std::size_t(std::distance(
                 fourth_diff_normed.begin(),
@@ -176,7 +176,7 @@ private:
 
     [[nodiscard]] static constexpr NormedDiffType 
     normed_fourth_difference(
-        const DiffType& second_diff_2, const DiffType& second_diff_3)
+        const DiffType& second_diff_2, const DiffType& second_diff_3) noexcept
     {
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
         constexpr double ratio = (1.0/7.0);
@@ -193,7 +193,7 @@ private:
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] static constexpr std::pair<CodomainType, DiffType> 
     symmetric_sum_1_var(
-        FuncType f, const DomainType& center, const DomainType& half_lengths, const CodomainType& central_value, double gm_point)
+        FuncType f, const DomainType& center, const DomainType& half_lengths, const CodomainType& central_value, double gm_point) noexcept
     {
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
         CodomainType val{};
@@ -225,7 +225,8 @@ private:
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] static constexpr CodomainType
     symmetric_sum_2_var(
-        FuncType f, const DomainType& center, const DomainType& half_lengths)
+        FuncType f, const DomainType& center,
+        const DomainType& half_lengths) noexcept
     {
         constexpr double gm_point = 0.9486832980505137995996680633298155601160;
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
@@ -274,7 +275,8 @@ private:
         requires MapsAs<FuncType, DomainType, CodomainType>
     [[nodiscard]] static constexpr CodomainType
     symmetric_sum_n_var(
-        FuncType f, const DomainType& center, const DomainType& half_lengths)
+        FuncType f, const DomainType& center,
+        const DomainType& half_lengths) noexcept
     {
         constexpr double gm_point = 0.6882472016116852977216287342936235251269;
         constexpr std::size_t ndim = std::tuple_size<DomainType>::value;
@@ -298,7 +300,7 @@ private:
     }
 
     [[nodiscard]] static constexpr unsigned int
-    ctz(unsigned int n)
+    ctz(unsigned int n) noexcept
     {
     #if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
         return (unsigned int)(__builtin_ctz(n));
@@ -312,7 +314,7 @@ private:
     }
 };
 
-[[nodiscard]] constexpr double uintpow(double x, unsigned int n)
+[[nodiscard]] constexpr double uintpow(double x, unsigned int n) noexcept
 {
     double res = 1;
     for (unsigned int i = 0; i < n; ++i)

@@ -69,8 +69,8 @@ struct GaussKronrod
 
     template <typename FuncType>
         requires MapsAs<FuncType, DomainType, CodomainType>
-    [[nodiscard]] static constexpr
-    ReturnType integrate(FuncType f, const Limits& limits) noexcept
+    [[nodiscard]] static constexpr ReturnType
+    integrate(FuncType f, const Limits& limits) noexcept
     {
         constexpr auto gauss_points = RuleData::gauss_points();
         constexpr auto kronrod_points = RuleData::kronrod_points();
@@ -158,7 +158,7 @@ struct GaussKronrod
 
 private:
     [[nodiscard]] static constexpr CodomainType
-    vfabs(const CodomainType& x)
+    vfabs(const CodomainType& x) noexcept
     {
         if constexpr (std::is_floating_point<CodomainType>::value)
             return std::fabs(x);
@@ -176,7 +176,7 @@ private:
             Jarle Berntsen, Terje O. Espelid, "Error Estimation in Automatic Quadrature Routines", ACM Trans. Math. Softw. 17:233-252, 1991
     */
     [[nodiscard]] static constexpr double berntsen_espelid_estimate(
-        double err_null_1, double err_null_0)
+        double err_null_1, double err_null_0) noexcept
     {
         const double ratio = err_null_1/err_null_0;
         if (200.0*ratio <= 1.0)

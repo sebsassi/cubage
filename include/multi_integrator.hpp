@@ -79,6 +79,7 @@ public:
     using Limits = RuleType::Limits;
     using Result = IntegralResult<CodomainType>;
 
+    constexpr IntegrationRegion() = default;
     explicit constexpr IntegrationRegion(const Limits& p_limits):
         m_region(p_limits) {}
 
@@ -133,9 +134,9 @@ public:
     limits() const noexcept { return m_region.limits(); }
 
 private:
-    RegionType m_region;
-    IntegralResult<CodomainType> m_result;
-    double m_maxerr;
+    RegionType m_region{};
+    IntegralResult<CodomainType> m_result{};
+    double m_maxerr{};
 };
 
 template <typename FieldType>
@@ -306,7 +307,7 @@ private:
 
 private:
     std::vector<RegionType> m_region_heap;
-    std::size_t m_region_eval_count;
+    std::size_t m_region_eval_count{};
 };
 
 }

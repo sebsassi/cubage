@@ -103,7 +103,7 @@ public:
     }
 
 private:
-    Limits m_limits;
+    Limits m_limits{};
 };
 
 }

@@ -124,7 +124,8 @@ public:
     template <typename Rule, typename FuncType>
         requires MapsAs<FuncType, DomainType, typename Rule::CodomainType>
         && BoxIntegratorSignature<Rule>
-    constexpr const IntegralResult<typename Rule::CodomainType> integrate(FuncType f) noexcept
+    [[nodiscard]] constexpr const IntegralResult<typename Rule::CodomainType> 
+    integrate(FuncType f) noexcept
     {
         const auto& [res, axis] = Rule::integrate(f, m_limits);
         m_subdiv_axis = axis;
@@ -132,8 +133,8 @@ public:
     }
 
 private:
-    Limits m_limits;
-    std::size_t m_subdiv_axis;
+    Limits m_limits{};
+    std::size_t m_subdiv_axis{};
 };
 
 }

@@ -35,7 +35,7 @@ template <>
 struct GK<15>
 {
     static constexpr std::size_t degree = 15;
-    [[nodiscard]] static constexpr std::array<double, 3> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 3> gauss_points() noexcept
     {
         return {
             0.949107912342758524526189684047851,
@@ -44,7 +44,8 @@ struct GK<15>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 4> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 4>
+    kronrod_points() noexcept
     {
         return {
             0.991455371120812639206854697526329,
@@ -54,7 +55,8 @@ struct GK<15>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 4> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 4>
+    gauss_weights() noexcept
     {
         return {
             0.129484966168869693270611432679082,
@@ -66,7 +68,7 @@ struct GK<15>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 3>, std::array<double, 4>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.209482141084727828012999174891714,
@@ -89,7 +91,7 @@ template <>
 struct GK<21>
 {
     static constexpr std::size_t degree = 21;
-    [[nodiscard]] static constexpr std::array<double, 5> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 5> gauss_points() noexcept
     {
         return {
             0.973906528517171720077964012084452,
@@ -100,7 +102,8 @@ struct GK<21>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 5> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 5>
+    kronrod_points() noexcept
     {
         return {
             0.995657163025808080735527280689003,
@@ -111,7 +114,8 @@ struct GK<21>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 5> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 5>
+    gauss_weights() noexcept
     {
         return {
             0.066671344308688137593568809893332,
@@ -124,7 +128,7 @@ struct GK<21>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 5>, std::array<double, 5>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.149445554002916905664936468389821,
@@ -150,7 +154,7 @@ template <>
 struct GK<31>
 {
     static constexpr std::size_t degree = 31;
-    [[nodiscard]] static constexpr std::array<double, 7> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 7> gauss_points() noexcept
     {
         return {
             0.987992518020485428489565718586613,
@@ -163,7 +167,8 @@ struct GK<31>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 8> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 8>
+    kronrod_points() noexcept
     {
         return {
             0.998002298693397060285172840152271,
@@ -177,7 +182,8 @@ struct GK<31>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 8> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 8>
+    gauss_weights() noexcept
     {
         return {
             0.030753241996117268354628393577204,
@@ -193,7 +199,7 @@ struct GK<31>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 7>, std::array<double, 8>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.101330007014791549017374792767493,
@@ -224,7 +230,8 @@ template <>
 struct GK<41>
 {
     static constexpr std::size_t degree = 41;
-    [[nodiscard]] static constexpr std::array<double, 10> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 10>
+    gauss_points() noexcept
     {
         return {
             0.993128599185094924786122388471320,
@@ -240,7 +247,8 @@ struct GK<41>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 10> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 10>
+    kronrod_points() noexcept
     {
         return {
             0.998859031588277663838315576545863,
@@ -256,7 +264,8 @@ struct GK<41>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 10> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 10>
+    gauss_weights() noexcept
     {
         return {
             0.017614007139152118311861962351853,
@@ -274,7 +283,7 @@ struct GK<41>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 10>, std::array<double, 10>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.076600711917999656445049901530102,
@@ -310,7 +319,8 @@ template <>
 struct GK<51>
 {
     static constexpr std::size_t degree = 51;
-    [[nodiscard]] static constexpr std::array<double, 12> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 12>
+    gauss_points() noexcept
     {
         return {
             0.995556969790498097908784946893902,
@@ -328,7 +338,8 @@ struct GK<51>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 13> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 13>
+    kronrod_points() noexcept
     {
         return {
             0.999262104992609834193457486540341,
@@ -347,7 +358,8 @@ struct GK<51>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 13> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 13>
+    gauss_weights() noexcept
     {
         return {
             0.011393798501026287947902964113235,
@@ -368,7 +380,7 @@ struct GK<51>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 12>, std::array<double, 13>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.061580818067832935078759824240066,
@@ -409,7 +421,8 @@ template <>
 struct GK<61>
 {
     static constexpr std::size_t degree = 61;
-    [[nodiscard]] static constexpr std::array<double, 15> gauss_points()
+    [[nodiscard]] static constexpr std::array<double, 15>
+    gauss_points() noexcept
     {
         return {
             0.996893484074649540271630050918695,
@@ -430,7 +443,8 @@ struct GK<61>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 15> kronrod_points()
+    [[nodiscard]] static constexpr std::array<double, 15>
+    kronrod_points() noexcept
     {
         return {
             0.999484410050490637571325895705811,
@@ -451,7 +465,8 @@ struct GK<61>
         };
     }
 
-    [[nodiscard]] static constexpr std::array<double, 15> gauss_weights()
+    [[nodiscard]] static constexpr std::array<double, 15>
+    gauss_weights() noexcept
     {
         return {
             0.007968192496166605615465883474674,
@@ -474,7 +489,7 @@ struct GK<61>
     
     [[nodiscard]] static constexpr
     std::tuple<double, std::array<double, 15>, std::array<double, 15>> 
-    kronrod_weights()
+    kronrod_weights() noexcept
     {
         return {
             0.051494729429451567558340433647099,
