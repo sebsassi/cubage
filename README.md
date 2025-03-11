@@ -64,7 +64,7 @@ Here `function` may be a lambda, function pointer, or any object which has a `Co
 
 Example of integrating a 2D Gaussian over the box `[-1, 1]^2`:
 ```cpp
-#include "array_arithmetic.hpp"
+#include "cubage/array_arithmetic.hpp"
 #include "cubage/hypercube_integrator.hpp"
 
 int main()
