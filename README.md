@@ -6,6 +6,8 @@ This library differs from most multidimensional integration libraries in that th
 
 The template-based approach enables the integration of any function `func` with signature `CodomainType func(DomainType)`. Here `DomainType` and `CodomainType` are any types, which model finite-dimensional vectors. That is, they are floating point scalars, or array-like types with floating point elements, which implement addition, subtraction, and scalar multiplication.
 
+NOTE: This is a C++20 library, and therefore requires a sufficiently modern compiler that supports C++20 features.
+
 ## Installation
 
 As a header-only library, the only necessary step for using this library is to copy the contents of the `include` directory into your project:
@@ -20,7 +22,7 @@ cmake -S . -B build
 cmake --install build --prefix <install directory>
 ```
 
-## Examples
+## Usage
 
 Example of integrating a 1D Gaussian over the interval `[-1, 1]`:
 ```cpp
