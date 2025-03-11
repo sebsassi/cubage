@@ -1,4 +1,4 @@
-#include "../hypercube_integrator.hpp"
+#include "cubage/hypercube_integrator.hpp"
 
 #include <chrono>
 #include <iostream>
