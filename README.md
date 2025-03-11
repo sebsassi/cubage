@@ -6,6 +6,20 @@ This library differs from most multidimensional integration libraries in that th
 
 The template-based approach enables the integration of any function `func` with signature `CodomainType func(DomainType)`. Here `DomainType` and `CodomainType` are any types, which model finite-dimensional vectors. That is, they are floating point scalars, or array-like types with floating point elements, which implement addition, subtraction, and scalar multiplication.
 
+## Installation
+
+As a header-only library, the only necessary step for using this library is to copy the contents of the `include` directory into your project:
+```bash
+cd cubage
+cp -R include/. <path to project>/cubage
+```
+However, a CMake-based installation is also available. This installs cubage as a package, which can be used by other CMake projects:
+```bash
+cd cubage
+cmake -S . -B build
+cmake --install build --prefix <install directory>
+```
+
 ## Examples
 
 Example of integrating a 1D Gaussian over the interval `[-1, 1]`:
